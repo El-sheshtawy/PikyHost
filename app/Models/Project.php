@@ -73,11 +73,6 @@ class Project extends Model
         return $this->hasMany(Task::class);
     }
 
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
-
     // Helper method to get slug for current locale
     public function getLocalizedSlugAttribute(): string
     {
