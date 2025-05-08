@@ -48,6 +48,7 @@ class Task extends Model
 
     protected $appends = ['status_label', 'priority_label'];
 
+// uuid
     protected static function boot()
     {
         parent::boot();
