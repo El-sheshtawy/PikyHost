@@ -23,14 +23,17 @@ class TasksRelationManager extends RelationManager
                     ->maxLength(255),
                 Forms\Components\Select::make('status')
                     ->options(TaskStatus::options())
-                    ->required(),
+                    ->required()
+                    ->native(false),
                 Forms\Components\Select::make('priority')
                     ->options(TaskPriority::options())
-                    ->required(),
+                    ->required()
+                    ->native(false),
                 Forms\Components\TextInput::make('progress')
                     ->numeric()
                     ->minValue(0)
-                    ->maxValue(100),
+                    ->maxValue(100)
+                    ->suffix('%'),
                 Forms\Components\DateTimePicker::make('due_at'),
             ]);
     }
@@ -40,29 +43,36 @@ class TasksRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('title')
             ->columns([
-                Tables\Columns\TextColumn::make('title'),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
+                    ->formatStateUsing(fn (TaskStatus $state): string => $state->label())
                     ->color(fn (TaskStatus $state): string => match ($state) {
                         TaskStatus::Pending => 'gray',
                         TaskStatus::InProgress => 'blue',
                         TaskStatus::Review => 'orange',
                         TaskStatus::Completed => 'green',
                         TaskStatus::Cancelled => 'red',
-                    }),
+                    })
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('priority')
                     ->badge()
+                    ->formatStateUsing(fn (TaskPriority $state): string => $state->label())
                     ->color(fn (TaskPriority $state): string => match ($state) {
                         TaskPriority::LOW => 'gray',
                         TaskPriority::MEDIUM => 'blue',
                         TaskPriority::HIGH => 'orange',
                         TaskPriority::CRITICAL => 'red',
-                    }),
+                    })
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('progress')
                     ->numeric()
-                    ->suffix('%'),
+                    ->suffix('%')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('due_at')
-                    ->dateTime(),
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -72,8 +82,10 @@ class TasksRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
+                Tables\Actions\AttachAction::make(),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -81,6 +93,7 @@ class TasksRelationManager extends RelationManager
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 }

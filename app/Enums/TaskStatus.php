@@ -9,6 +9,13 @@ enum TaskStatus: string
     case Review = 'review';
     case Completed = 'completed';
     case Cancelled = 'cancelled';
+    
+    public static function options(): array
+    {
+        return collect(self::cases())
+            ->mapWithKeys(fn($status) => [$status->value => $status->label()])
+            ->toArray();
+    }
 
     public function label(): string
     {
@@ -19,12 +26,5 @@ enum TaskStatus: string
             self::Completed => __('Completed'),
             self::Cancelled => __('Cancelled'),
         };
-    }
-
-    public static function options(): array
-    {
-        return collect(self::cases())
-            ->mapWithKeys(fn($status) => [$status->value => $status->label()])
-            ->toArray();
     }
 }
