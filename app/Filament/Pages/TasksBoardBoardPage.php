@@ -23,6 +23,13 @@ class TasksBoardBoardPage extends KanbanBoardPage
     {
         $this->project_id = request()->query('project_id');
 
+        $cardAttributes = [
+            'priority' => 'Priority',
+            'due_at' => 'Due Date',
+            'description' => 'Description',
+            'assignees' => 'Assignees',
+        ];
+
         $this
             ->titleField('title')
             ->descriptionField('description')
@@ -38,19 +45,19 @@ class TasksBoardBoardPage extends KanbanBoardPage
             ])
             ->cardLabel('Task')
             ->pluralCardLabel('Tasks')
-            ->cardAttributes([
-                'priority' => 'Priority',
-                'due_at' => 'Due Date',
-            ])
+            ->cardAttributes($cardAttributes)
             ->cardAttributeIcons([
                 'priority' => 'heroicon-o-flag',
                 'due_at' => 'heroicon-o-calendar',
-            ]);
+                'description' => 'heroicon-o-document-text',
+                'assignees' => 'heroicon-o-users',
+            ])
+        ;
     }
 
     public function getSubject(): Builder
     {
-        $query = Task::query();
+        $query = Task::query()->with(['users']);
 
         if ($this->project_id) {
             $query->where('project_id', $this->project_id);
@@ -81,6 +88,14 @@ class TasksBoardBoardPage extends KanbanBoardPage
                 Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Components\DateTimePicker::make('due_at'),
+                Components\Select::make('users')
+                    ->label('Assignees')
+                    ->multiple()
+                    ->relationship('users', 'name')
+                    ->searchable()
+                    ->preload(),
+                Components\Hidden::make('project_id')
+                    ->default($this->project_id)
             ]);
     }
 
@@ -104,6 +119,12 @@ class TasksBoardBoardPage extends KanbanBoardPage
                 Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Components\DateTimePicker::make('due_at'),
+                Components\Select::make('users')
+                    ->label('Assignees')
+                    ->multiple()
+                    ->relationship('users', 'name')
+                    ->searchable()
+                    ->preload(),
             ]);
     }
 

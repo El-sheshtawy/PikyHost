@@ -57,11 +57,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         ];
     }
 
-    public function carts()
-    {
-        return $this->hasMany(Cart::class);
-    }
-
     public function canAccessPanel(Panel $panel): bool
     {
         if (Filament::getCurrentPanel()->getId() === 'admin') {
@@ -89,16 +84,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
     public function addresses()
     {
         return $this->hasMany(UserAddress::class, 'user_id');
-    }
-
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
-    }
-
-    public function couponUsages()
-    {
-        return $this->hasMany(CouponUsage::class);
     }
 
     public function likedBlogs(): BelongsToMany
