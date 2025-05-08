@@ -81,4 +81,9 @@ class Task extends Model
     {
         return $this->priority->label(app()->getLocale());
     }
+
+    public function getAssigneesAttribute(): string
+    {
+        return $this->users->pluck('name')->join(', ') ?: 'No assignees';
+    }
 }
