@@ -42,16 +42,6 @@ class TasksBoardBoardPage extends KanbanBoardPage
                 'priority' => 'Priority',
                 'due_at' => 'Due Date',
             ])
-            ->cardAttributeColors([
-                'priority' => fn ($state) => match($state) {
-                    'low' => 'gray',
-                    'medium' => 'blue',
-                    'high' => 'orange',
-                    'critical' => 'red',
-                    default => 'gray',
-                },
-                'due_at' => 'red',
-            ])
             ->cardAttributeIcons([
                 'priority' => 'heroicon-o-flag',
                 'due_at' => 'heroicon-o-calendar',

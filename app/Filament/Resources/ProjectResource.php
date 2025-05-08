@@ -150,7 +150,7 @@ class ProjectResource extends Resource
                 Tables\Filters\Filter::make('active_projects')
                     ->query(fn (Builder $query): Builder => $query->where('status', ProjectStatus::ACTIVE))
                     ->label('Active Projects Only'),
-            ])
+            ],Tables\Enums\FiltersLayout::Modal)
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
