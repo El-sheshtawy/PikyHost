@@ -13,13 +13,12 @@ class TasksBoardBoardPage extends KanbanBoardPage
     protected static ?string $navigationLabel = 'Tasks Board';
     protected static ?string $title = 'Task Board';
 
-    public function getSubject(): Builder
-    {
-        return Task::query();
-    }
+    public $project_id;
 
     public function mount(): void
     {
+        $this->project_id = request()->query('project_id');
+
         $this
             ->titleField('title')
             ->orderField('order_column')
@@ -32,5 +31,21 @@ class TasksBoardBoardPage extends KanbanBoardPage
                 TaskStatus::Completed->value => 'green',
                 TaskStatus::Cancelled->value => 'red',
             ]);
+    }
+
+    public function getSubject(): Builder
+    {
+        $query = Task::query();
+
+        if ($this->project_id) {
+            $query->where('project_id', $this->project_id);
+        }
+
+        return $query;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false; // Hide from main navigation since we access it through projects
     }
 }
