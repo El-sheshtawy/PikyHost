@@ -9,7 +9,7 @@ enum TaskStatus: string
     case Review = 'review';
     case Completed = 'completed';
     case Cancelled = 'cancelled';
-    
+
     public static function options(): array
     {
         return collect(self::cases())
