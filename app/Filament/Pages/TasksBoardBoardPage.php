@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\TaskPriority;
 use App\Models\Task;
 use App\Enums\TaskStatus;
 use Filament\Actions\Action;
@@ -40,7 +41,6 @@ class TasksBoardBoardPage extends KanbanBoardPage
             ->cardAttributes([
                 'priority' => 'Priority',
                 'due_at' => 'Due Date',
-                'owner.name' => 'Assigned To',
             ])
             ->cardAttributeColors([
                 'priority' => fn ($state) => match($state) {
@@ -55,13 +55,12 @@ class TasksBoardBoardPage extends KanbanBoardPage
             ->cardAttributeIcons([
                 'priority' => 'heroicon-o-flag',
                 'due_at' => 'heroicon-o-calendar',
-                'owner.name' => 'heroicon-o-user',
             ]);
     }
 
     public function getSubject(): Builder
     {
-        $query = Task::query()->with(['owner']);
+        $query = Task::query();
 
         if ($this->project_id) {
             $query->where('project_id', $this->project_id);
@@ -92,10 +91,6 @@ class TasksBoardBoardPage extends KanbanBoardPage
                 Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Components\DateTimePicker::make('due_at'),
-                Components\Select::make('owner_id')
-                    ->relationship('owner', 'name')
-                    ->searchable()
-                    ->preload(),
             ])
             ->using(function (array $data) {
                 if ($this->project_id) {
@@ -125,10 +120,6 @@ class TasksBoardBoardPage extends KanbanBoardPage
                 Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Components\DateTimePicker::make('due_at'),
-                Components\Select::make('owner_id')
-                    ->relationship('owner', 'name')
-                    ->searchable()
-                    ->preload(),
             ]);
     }
 
