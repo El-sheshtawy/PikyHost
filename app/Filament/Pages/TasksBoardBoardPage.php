@@ -91,13 +91,7 @@ class TasksBoardBoardPage extends KanbanBoardPage
                 Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Components\DateTimePicker::make('due_at'),
-            ])
-            ->using(function (array $data) {
-                if ($this->project_id) {
-                    $data['project_id'] = $this->project_id;
-                }
-                return Task::create($data);
-            });
+            ]);
     }
 
     public function editAction(Action $action): Action
