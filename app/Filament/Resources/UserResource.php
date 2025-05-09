@@ -60,7 +60,6 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use libphonenumber\PhoneNumberUtil;
 use Spatie\Permission\Models\Role;
-use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
 use Illuminate\Validation\Rules\Password;
@@ -446,9 +445,6 @@ class UserResource extends Resource
                     ->relationship('roles', 'name',
                         modifyQueryUsing: fn (Builder $query) => $query->where('name', '!=', 'panel_user'))
                     ->columnSpan(['sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2, '2xl' => 2, 'default' => 2]),
-                DateFilter::make('created_at')
-                    ->columnSpan(['sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2, '2xl' => 2, 'default' => 2])
-                    ->label(__('Creation date')),
                 Filter::make('is_active')->toggle()->label(__("Is Active?"))->columnSpanFull(),
             ], Tables\Enums\FiltersLayout::AboveContentCollapsible)
             ->filtersFormColumns(4)
