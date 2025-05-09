@@ -19,7 +19,6 @@ use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Jeffgreco13\FilamentBreezy\Livewire\MyProfileComponent;
 use libphonenumber\PhoneNumberUtil;
-use Torann\GeoIP\GeoIP;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class ProfileContactDetails extends MyProfileComponent implements HasActions, HasForms
@@ -62,7 +61,7 @@ class ProfileContactDetails extends MyProfileComponent implements HasActions, Ha
                     ->columnSpanFull()
                     ->separateDialCode(true)
                     ->enableIpLookup(true)
-                    ->initialCountry(fn () => (new \Torann\GeoIP\GeoIP)->getLocation(request()->ip())['iso_code'] ?? 'US')
+                    ->initialCountry(fn () => geoip(request()->ip())['country_code2'] ?? 'US')
                     ->countryStatePath('phone_country') // Bind country code to a state path
                     ->required()
                     ->rules([
@@ -130,7 +129,7 @@ class ProfileContactDetails extends MyProfileComponent implements HasActions, Ha
                 PhoneInput::make('second_phone')
                     ->separateDialCode(true)
                     ->enableIpLookup(true)
-                    ->initialCountry(fn () => (new \Torann\GeoIP\GeoIP)->getLocation(request()->ip())['iso_code'] ?? 'US')
+                    ->initialCountry(fn () => geoip(request()->ip())['country_code2'] ?? 'US')
                     ->required()
                     ->rules([
                         // Dynamic validation based on country code
