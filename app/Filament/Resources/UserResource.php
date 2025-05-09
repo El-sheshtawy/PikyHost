@@ -2,22 +2,15 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Exports\CountryExporter;
-use App\Filament\Exports\UserExporter;
-use App\Mail\OfferEmail;
 use App\Models\User;
-use Closure;
 use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\Pages\ManageUserOrders;
 use App\Traits\HasCreatedAtFilter;
 use App\Traits\HasTimestampSection;
 use Filament\Actions\Exports\Enums\ExportFormat;
-use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Events\Auth\Registered;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
@@ -52,18 +45,15 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use libphonenumber\PhoneNumberUtil;
 use Spatie\Permission\Models\Role;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
 use Illuminate\Validation\Rules\Password;
-use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
 class UserResource extends Resource
 {
@@ -114,7 +104,6 @@ class UserResource extends Resource
         return $page->generateNavigationItems([
             Pages\ViewUser::class,
             Pages\EditUser::class,
-            ManageUserOrders::class
         ]);
     }
 
@@ -381,13 +370,6 @@ class UserResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('orders_count')
-                    ->badge()
-                    ->color('success')
-                    ->label(__('Orders Count'))
-                    ->counts('orders')
-                    ->sortable(),
-
                 TextColumn::make('name')
                     ->label(__('name'))
                     ->tooltip(fn (TextColumn $column): ?string => static::getTooltip($column))
@@ -606,8 +588,7 @@ class UserResource extends Resource
                         ->successNotificationTitle(__('Your message was successfully sent!'))
                 ])
             ])
-            ->recordUrl(fn () => '')
-            ->defaultSort('orders_count', 'desc');
+            ->recordUrl(fn () => '');
     }
 
     private static function activeUser(User $record)
@@ -704,13 +685,12 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
             'view' => Pages\ViewUser::route('/{record}'),
-            'orders' => ManageUserOrders::route('/{record}/orders'),
         ];
     }
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()->withCount('orders');
+        $query = parent::getEloquentQuery();
 
         // Only super_admins can see super_admins
         if (!auth()->user()->hasRole('super_admin')) {
