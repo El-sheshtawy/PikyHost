@@ -134,6 +134,13 @@ class ProjectResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\SpatieMediaLibraryImageColumn::make('feature_project_image')
+                    ->circular()
+                    ->simpleLightbox()
+                    ->placeholder('-')
+                    ->collection('feature_project_image')
+                    ->label(__('Image')),
+
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
