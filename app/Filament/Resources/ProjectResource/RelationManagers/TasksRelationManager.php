@@ -66,7 +66,7 @@ class TasksRelationManager extends RelationManager
                     ->options(TaskStatus::options()),
                 Tables\Filters\SelectFilter::make('priority')
                     ->options(TaskPriority::options()),
-            ])
+            ], Tables\Enums\FiltersLayout::Modal)
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
                 Tables\Actions\AttachAction::make(),

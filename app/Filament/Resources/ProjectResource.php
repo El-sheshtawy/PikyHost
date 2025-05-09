@@ -40,8 +40,7 @@ class ProjectResource extends Resource
                             ->label('Project Name'),
 
                         Forms\Components\TextInput::make('slug')
-                            ->maxLength(255)
-                            ->disabledOn('edit'),
+                            ->maxLength(255),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Details')
@@ -143,20 +142,21 @@ class ProjectResource extends Resource
                     ->label('Active Projects Only'),
             ],Tables\Enums\FiltersLayout::Modal)
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('view_tasks_board')
-                    ->label('Tasks Board')
-                    ->icon('heroicon-o-view-columns')
-                    ->url(fn (Project $record): string => route('filament.admin.pages.tasks-board-board-page', [
-                        'project_id' => $record->id
-                    ])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
+            ->recordUrl(function () {
+               return Tables\Actions\Action::make('view_tasks_board')
+                    ->label('Tasks Board')
+                    ->icon('heroicon-o-view-columns')
+                    ->url(fn (Project $record): string => route('filament.admin.pages.tasks-board-board-page', [
+                        'project_id' => $record->id
+                    ]));
+            })
             ->defaultSort('created_at', 'desc');
     }
 
