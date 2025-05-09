@@ -89,11 +89,6 @@ class TasksBoardBoardPage extends KanbanBoardPage
                 Components\Textarea::make('description')
                     ->columnSpanFull()
                     ->translateLabel(),
-                Components\Select::make('status')
-                    ->options(TaskStatus::options())
-                    ->required()
-                    ->native(false)
-                    ->translateLabel(),
                 Components\Select::make('priority')
                     ->options(TaskPriority::options())
                     ->required()
@@ -134,11 +129,6 @@ class TasksBoardBoardPage extends KanbanBoardPage
                     ->translateLabel(),
                 Components\Textarea::make('description')
                     ->columnSpanFull()
-                    ->translateLabel(),
-                Components\Select::make('status')
-                    ->options(TaskStatus::options())
-                    ->required()
-                    ->native(false)
                     ->translateLabel(),
                 Components\Select::make('priority')
                     ->options(TaskPriority::options())

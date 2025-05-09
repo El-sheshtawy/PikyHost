@@ -6,9 +6,9 @@ use App\Enums\ProjectStatus;
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Filament\Resources\ProjectResource\RelationManagers\TasksRelationManager;
 use App\Models\Project;
-use App\Models\Task;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\View;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
@@ -273,10 +273,10 @@ class ProjectResource extends Resource
                     ->schema([
                         ImageEntry::make('feature_project_image')
                             ->label('Featured Image')
-                            ->getStateUsing(fn (Project $record) => $record->getFeatureProjectImageUrl()),
+                            ->getStateUsing(fn () => $record->getFeatureProjectImageUrl()),
                         ImageEntry::make('second_feature_image')
                             ->label('Secondary Image')
-                            ->getStateUsing(fn (Project $record) => $record->getSecondFeatureImageUrl()),
+                            ->getStateUsing(fn () => $record->getSecondFeatureImageUrl()),
                     ])
                     ->columns(2),
 
@@ -285,28 +285,50 @@ class ProjectResource extends Resource
                         RepeatableEntry::make('tasks')
                             ->schema([
                                 TextEntry::make('title')
-                                    ->label('Title'),
+                                    ->label('Task Title'),
+
                                 TextEntry::make('status')
                                     ->label('Status')
                                     ->badge(),
+
                                 TextEntry::make('priority')
                                     ->label('Priority')
                                     ->badge(),
+
                                 TextEntry::make('progress')
                                     ->label('Progress')
                                     ->suffix('%'),
+
                                 TextEntry::make('due_at')
                                     ->label('Due Date')
                                     ->date(),
+
+                                // Assigned users with roles and assignment time
+                                RepeatableEntry::make('users')
+                                    ->label('Assigned Team')
+                                    ->schema([
+                                        TextEntry::make('name')
+                                            ->label('Name'),
+
+                                        TextEntry::make('pivot.role')
+                                            ->label('Role')
+                                            ->badge(),
+
+                                        TextEntry::make('pivot.created_at')
+                                            ->label('Assigned On')
+                                            ->date(),
+                                    ])
+                                    ->columns(3)
+                                    ->columnSpanFull(),
                             ])
                             ->columns(5),
                     ]),
 
-                \Filament\Infolists\Components\Section::make('View or Download Project Documents')
+                Section::make('Project Documents')
                     ->collapsible()
-                    ->visible(fn (Project $record) => $record->hasMedia('project_documents'))
+                    ->visible(fn () => $record->hasMedia('project_documents'))
                     ->schema([
-                        \Filament\Infolists\Components\View::make('components.project-documents-preview')
+                        View::make('components.project-documents-preview')
                             ->hiddenLabel()
                             ->viewData([
                                 'project' => $record,
