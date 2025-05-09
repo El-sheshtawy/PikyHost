@@ -48,13 +48,6 @@ class TasksRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn (TaskStatus $state): string => $state->label())
-                    ->color(fn (TaskStatus $state): string => match ($state) {
-                        TaskStatus::Pending => 'gray',
-                        TaskStatus::InProgress => 'blue',
-                        TaskStatus::Review => 'orange',
-                        TaskStatus::Completed => 'green',
-                        TaskStatus::Cancelled => 'red',
-                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('priority')
                     ->badge()

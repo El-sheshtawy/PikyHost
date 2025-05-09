@@ -25,12 +25,6 @@ class TasksBoardBoardPage extends KanbanBoardPage
         $this->project_id = request()->query('project_id');
         session(['current_project_id' => $this->project_id]);
 
-        if (empty($this->project_id)) {
-            Log::error('No project_id provided in query string');
-        } else {
-            Log::info('Mount: project_id = ' . $this->project_id);
-        }
-
         $cardAttributes = [
             'priority' => 'Priority',
             'due_at' => 'Due Date',
@@ -58,7 +52,9 @@ class TasksBoardBoardPage extends KanbanBoardPage
                 'due_at' => 'heroicon-o-calendar',
                 'description' => 'heroicon-o-document-text',
                 'assignees' => 'heroicon-o-users',
-            ]);
+            ])
+            ->initialCardsCount(15)
+            ->cardsIncrement(10);
     }
 
     public function getSubject(): Builder
@@ -79,7 +75,7 @@ class TasksBoardBoardPage extends KanbanBoardPage
             ->iconButton()
             ->icon('heroicon-o-plus')
             ->modalHeading('Create New Task')
-            ->modalWidth('xl')
+            ->modalWidth('md')
             ->form([
                 Components\Select::make('users')
                     ->label('Assignees')
@@ -125,7 +121,7 @@ class TasksBoardBoardPage extends KanbanBoardPage
     {
         return $action
             ->modalHeading('Edit Task')
-            ->modalWidth('xl')
+            ->modalWidth('md')
             ->form([
                 Components\Select::make('users')
                     ->label('Assignees')
@@ -160,7 +156,7 @@ class TasksBoardBoardPage extends KanbanBoardPage
     {
         return $action
             ->modalHeading('Task Details')
-            ->modalWidth('xl')
+            ->modalWidth('md')
             ->modalContent(view('filament.pages.task-view', [
                 'record' => $action->getRecord(),
             ]));

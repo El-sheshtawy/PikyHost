@@ -77,8 +77,7 @@ class ProjectResource extends Resource
                 Forms\Components\Section::make('Progress')
                     ->schema([
                         Forms\Components\TextInput::make('budget')
-                            ->numeric()
-                            ->prefix('$'),
+                            ->numeric(),
 
                         Forms\Components\TextInput::make('progress')
                             ->numeric()
@@ -105,14 +104,6 @@ class ProjectResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn (ProjectStatus $state): string => $state->label())
-                    ->color(fn (ProjectStatus $state): string => match ($state) {
-                        ProjectStatus::DRAFT => 'gray',
-                        ProjectStatus::PLANNED => 'blue',
-                        ProjectStatus::ACTIVE => 'green',
-                        ProjectStatus::ON_HOLD => 'orange',
-                        ProjectStatus::COMPLETED => 'purple',
-                        ProjectStatus::CANCELLED => 'red',
-                    })
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_featured')
