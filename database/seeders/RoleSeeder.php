@@ -17,6 +17,7 @@ class RoleSeeder extends Seeder
             UserRole::SuperAdmin,
             UserRole::Admin,
             UserRole::Client,
+            UserRole::Developer
         ];
 
         foreach ($roles as $role) {

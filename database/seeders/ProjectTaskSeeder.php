@@ -4,43 +4,43 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Project;
+use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
-class ProjectTaskSeeder extends Seeder
+class ProjectTaskUserSeeder extends Seeder
 {
     public function run()
     {
-        // Create users with different roles
+        // Create Developer Role if it doesn't exist
+        $developerRole = Role::firstOrCreate(['name' => 'developer']);
+
+        // Create users with Arabic names
         $users = [
             [
-                'name' => 'Alex Johnson',
-                'email' => 'alex.johnson@example.com',
+                'name' => 'Youssef Ahmed',
+                'email' => 'youssef@example.com',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ],
             [
-                'name' => 'Maria Garcia',
-                'email' => 'maria.garcia@example.com',
+                'name' => 'Ahmed Labeb',
+                'email' => 'ahmed.labeb@example.com',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ],
             [
-                'name' => 'James Wilson',
-                'email' => 'james.wilson@example.com',
+                'name' => 'Sabah Mohamed',
+                'email' => 'sabah@example.com',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ],
             [
-                'name' => 'Sarah Chen',
-                'email' => 'sarah.chen@example.com',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-            ],
-            [
-                'name' => 'David Kim',
-                'email' => 'david.kim@example.com',
+                'name' => 'Mohamed Mostafa',
+                'email' => 'mohamed.mostafa@example.com',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ],
@@ -48,12 +48,14 @@ class ProjectTaskSeeder extends Seeder
 
         $createdUsers = [];
         foreach ($users as $user) {
-            $createdUsers[] = User::create($user);
+            $newUser = User::create($user);
+            $newUser->assignRole($developerRole); // Assign developer role using Spatie
+            $createdUsers[] = $newUser;
         }
 
         // Project 1: Website Redesign
         $websiteRedesign = Project::create([
-            'owner_id' => $createdUsers[0]->id, // Alex owns this project
+            'owner_id' => $createdUsers[0]->id, // Youssef owns this project
             'uuid' => \Illuminate\Support\Str::uuid(),
             'name' => 'Corporate Website Redesign',
             'slug' => 'corporate-website-redesign',
@@ -82,8 +84,8 @@ class ProjectTaskSeeder extends Seeder
                 'completed_at' => Carbon::now()->subDays(5),
                 'order_column' => 1,
                 'assignments' => [
-                    ['user_id' => $createdUsers[1]->id, 'role' => 'researcher'], // Maria
-                    ['user_id' => $createdUsers[3]->id, 'role' => 'assistant']    // Sarah
+                    ['user_id' => $createdUsers[1]->id, 'role' => 'developer'], // Ahmed Labeb
+                    ['user_id' => $createdUsers[3]->id, 'role' => 'developer']   // Mohamed Mostafa
                 ]
             ],
             [
@@ -97,7 +99,7 @@ class ProjectTaskSeeder extends Seeder
                 'completed_at' => Carbon::now()->subDays(2),
                 'order_column' => 2,
                 'assignments' => [
-                    ['user_id' => $createdUsers[2]->id, 'role' => 'designer'],   // James
+                    ['user_id' => $createdUsers[2]->id, 'role' => 'developer'], // Sabah
                 ]
             ],
             [
@@ -110,8 +112,8 @@ class ProjectTaskSeeder extends Seeder
                 'due_at' => Carbon::now()->addDays(2),
                 'order_column' => 3,
                 'assignments' => [
-                    ['user_id' => $createdUsers[2]->id, 'role' => 'lead designer'],  // James
-                    ['user_id' => $createdUsers[4]->id, 'role' => 'reviewer']        // David
+                    ['user_id' => $createdUsers[2]->id, 'role' => 'developer'],  // Sabah
+                    ['user_id' => $createdUsers[0]->id, 'role' => 'developer']   // Youssef
                 ]
             ],
             [
@@ -124,7 +126,7 @@ class ProjectTaskSeeder extends Seeder
                 'due_at' => Carbon::now()->addDays(10),
                 'order_column' => 4,
                 'assignments' => [
-                    ['user_id' => $createdUsers[3]->id, 'role' => 'developer'],   // Sarah
+                    ['user_id' => $createdUsers[3]->id, 'role' => 'developer'],   // Mohamed Mostafa
                 ]
             ],
         ];
@@ -132,7 +134,6 @@ class ProjectTaskSeeder extends Seeder
         foreach ($websiteTasks as $taskData) {
             $task = $websiteRedesign->tasks()->create(collect($taskData)->except('assignments')->toArray());
 
-            // Assign users to the task
             foreach ($taskData['assignments'] as $assignment) {
                 $task->users()->attach($assignment['user_id'], ['role' => $assignment['role']]);
             }
@@ -140,7 +141,7 @@ class ProjectTaskSeeder extends Seeder
 
         // Project 2: Mobile App Development
         $mobileApp = Project::create([
-            'owner_id' => $createdUsers[1]->id, // Maria owns this project
+            'owner_id' => $createdUsers[1]->id, // Ahmed Labeb owns this project
             'uuid' => \Illuminate\Support\Str::uuid(),
             'name' => 'Customer Mobile App',
             'slug' => 'customer-mobile-app',
@@ -169,8 +170,8 @@ class ProjectTaskSeeder extends Seeder
                 'completed_at' => Carbon::now()->subDays(18),
                 'order_column' => 1,
                 'assignments' => [
-                    ['user_id' => $createdUsers[3]->id, 'role' => 'devops'],    // Sarah
-                    ['user_id' => $createdUsers[4]->id, 'role' => 'developer']   // David
+                    ['user_id' => $createdUsers[3]->id, 'role' => 'developer'],    // Mohamed Mostafa
+                    ['user_id' => $createdUsers[0]->id, 'role' => 'developer']    // Youssef
                 ]
             ],
             [
@@ -183,84 +184,14 @@ class ProjectTaskSeeder extends Seeder
                 'due_at' => Carbon::now()->addDays(5),
                 'order_column' => 2,
                 'assignments' => [
-                    ['user_id' => $createdUsers[0]->id, 'role' => 'frontend'],   // Alex
-                    ['user_id' => $createdUsers[4]->id, 'role' => 'backend']    // David
-                ]
-            ],
-            [
-                'title' => 'Design product catalog screen',
-                'description' => 'Create UI for browsing and searching products',
-                'status' => 'pending',
-                'priority' => 'medium',
-                'progress' => 0,
-                'starts_at' => Carbon::now()->addDays(7),
-                'due_at' => Carbon::now()->addDays(14),
-                'order_column' => 3,
-                'assignments' => [
-                    ['user_id' => $createdUsers[2]->id, 'role' => 'designer'], // James
+                    ['user_id' => $createdUsers[0]->id, 'role' => 'developer'],   // Youssef
+                    ['user_id' => $createdUsers[2]->id, 'role' => 'developer']   // Sabah
                 ]
             ],
         ];
 
         foreach ($mobileTasks as $taskData) {
             $task = $mobileApp->tasks()->create(collect($taskData)->except('assignments')->toArray());
-
-            foreach ($taskData['assignments'] as $assignment) {
-                $task->users()->attach($assignment['user_id'], ['role' => $assignment['role']]);
-            }
-        }
-
-        // Project 3: Office Relocation
-        $officeMove = Project::create([
-            'owner_id' => $createdUsers[4]->id, // David owns this project
-            'uuid' => \Illuminate\Support\Str::uuid(),
-            'name' => 'New Office Setup',
-            'slug' => 'new-office-setup',
-            'summary' => 'Relocate company headquarters to new downtown location',
-            'description' => 'This project involves planning and executing the move of our company headquarters from the current location to the new downtown office space.',
-            'status' => 'planned',
-            'is_featured' => false,
-            'starts_at' => Carbon::now()->addDays(30),
-            'ends_at' => Carbon::now()->addDays(90),
-            'budget' => 75000.00,
-            'progress' => 5,
-            'meta' => ['tags' => ['facilities', 'logistics']],
-            'settings' => ['color' => '#f59e0b', 'notifications' => false]
-        ]);
-
-        // Tasks for Office Relocation with assignments
-        $officeTasks = [
-            [
-                'title' => 'Finalize lease agreement',
-                'description' => 'Review and sign contract for new office space',
-                'status' => 'in_progress',
-                'priority' => 'critical',
-                'progress' => 90,
-                'starts_at' => Carbon::now()->subDays(10),
-                'due_at' => Carbon::now()->addDays(5),
-                'order_column' => 1,
-                'assignments' => [
-                    ['user_id' => $createdUsers[4]->id, 'role' => 'manager'],   // David
-                    ['user_id' => $createdUsers[0]->id, 'role' => 'legal']      // Alex
-                ]
-            ],
-            [
-                'title' => 'Plan office layout',
-                'description' => 'Design seating arrangements and common areas',
-                'status' => 'pending',
-                'priority' => 'medium',
-                'progress' => 0,
-                'starts_at' => Carbon::now()->addDays(15),
-                'due_at' => Carbon::now()->addDays(25),
-                'order_column' => 2,
-                'assignments' => [
-                    ['user_id' => $createdUsers[1]->id, 'role' => 'planner'],   // Maria
-                ]
-            ],
-        ];
-
-        foreach ($officeTasks as $taskData) {
-            $task = $officeMove->tasks()->create(collect($taskData)->except('assignments')->toArray());
 
             foreach ($taskData['assignments'] as $assignment) {
                 $task->users()->attach($assignment['user_id'], ['role' => $assignment['role']]);

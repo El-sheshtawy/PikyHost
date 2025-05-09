@@ -10,6 +10,7 @@ enum UserRole: string implements HasColor, HasLabel
 {
     case SuperAdmin = 'super_admin';
     case Admin = 'admin';
+    case Developer  = 'developer';
     case Client = 'client';
 
     /**
@@ -21,6 +22,7 @@ enum UserRole: string implements HasColor, HasLabel
             self::SuperAdmin => __('roles.super_admin'),
             self::Admin => __('roles.admin'),
             self::Client => __('roles.client'),
+            self::Developer => __('roles.developer'),
         };
     }
 
@@ -33,6 +35,7 @@ enum UserRole: string implements HasColor, HasLabel
             self::SuperAdmin => 'danger',
             self::Admin => 'success',
             self::Client => 'info',
+            self::Developer => 'gray',
         };
     }
 

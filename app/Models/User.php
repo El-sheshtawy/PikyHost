@@ -66,8 +66,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
             ]);
         }
 
-        if (Filament::getCurrentPanel()->getId() === 'client') {
-            return $this->hasRole(UserRole::Client->value);
+        if (Filament::getCurrentPanel()->getId() === 'developer') {
+            return $this->hasRole(UserRole::Developer->value);
         }
 
         return false;

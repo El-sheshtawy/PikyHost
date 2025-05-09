@@ -5,10 +5,12 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\TasksBoardBoardPage;
 use App\Livewire\ProfileContactDetails;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -24,28 +26,36 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use SolutionForest\FilamentSimpleLightBox\SimpleLightBoxPlugin;
 
-class AdminPanelProvider extends PanelProvider
+class DeveloperPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
-            ->id('admin')
-            ->path('admin')
-            ->login()
+            ->id('developer')
+            ->path('developer')
             ->colors([
-                'primary' => Color::Indigo,
+                'primary' => Color::Orange,
                 'gray' => Color::Slate,
             ])
-            ->sidebarCollapsibleOnDesktop()
-
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->login()
+            ->registration()
+            ->passwordReset()
+            ->emailVerification()
+            ->discoverResources(in: app_path('Filament/Developer/Resources'), for: 'App\\Filament\\Developer\\Resources')
+            ->discoverPages(in: app_path('Filament/Developer/Pages'), for: 'App\\Filament\\Developer\\Pages')
             ->pages([
                 Pages\Dashboard::class,
                 TasksBoardBoardPage::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->userMenuItems([
+                'profile' => MenuItem::make()
+                    ->visible(fn() => Filament::auth()->check())
+                    ->url(url('/client/my-profile')) // Adjusted route helper here
+                    ->icon('heroicon-m-user-circle'),
+                'logout' => MenuItem::make(),
+            ])
+            ->discoverWidgets(in: app_path('Filament/Developer/Widgets'), for: 'App\\Filament\\Developer\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
@@ -61,17 +71,9 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->spa()
-            ->spaUrlExceptions([
-                '*/admin/blog-categories/create',
-                '*/admin/blog-categories/*/edit',
-                '*/admin/blogs',
-                '*/admin/blogs/*',
-            ])
             ->authMiddleware([
                 Authenticate::class,
             ])->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 SimpleLightBoxPlugin::make(),
                 SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en', 'ar']),
                 GlobalSearchModalPlugin::make(),
