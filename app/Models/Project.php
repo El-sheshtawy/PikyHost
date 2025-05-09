@@ -65,6 +65,14 @@ class Project extends Model implements HasMedia
         });
     }
 
+    public function getProjectDocumentsUrls(): array
+    {
+        return $this->getMedia('project_documents')
+            ->map(fn($media) => $media->getUrl())
+            ->toArray();
+    }
+
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('feature_project_image')
@@ -88,6 +96,11 @@ class Project extends Model implements HasMedia
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'video/mp4']);
     }
 
+    public function getProjectDocuments(): \Illuminate\Support\Collection
+    {
+        return $this->getMedia('project_documents');
+    }
+
     public function getFeatureProjectImageUrl(): ?string
     {
         return $this->getFirstMediaUrl('feature_project_image') ?: null;
@@ -95,13 +108,6 @@ class Project extends Model implements HasMedia
     public function getSecondFeatureImageUrl(): ?string
     {
         return $this->getFirstMediaUrl('second_feature_image') ?: null;
-    }
-
-    public function getProjectDocumentsUrls(): array
-    {
-        return $this->getMedia('project_documents')
-            ->map(fn($media) => $media->getUrl())
-            ->toArray();
     }
 
     public function getProjectGalleryUrls(string $conversion = null): array

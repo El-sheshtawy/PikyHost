@@ -219,6 +219,8 @@ class ProjectResource extends Resource
 
     public static function infolist(Infolist $infolist): Infolist
     {
+        $record = $infolist->getRecord();
+
         return $infolist
             ->schema([
                 Section::make('Project Overview')
@@ -300,51 +302,16 @@ class ProjectResource extends Resource
                             ->columns(5),
                     ]),
 
-                Section::make('Documents')
+                \Filament\Infolists\Components\Section::make('View or Download Project Documents')
                     ->collapsible()
-                    ->collapsed(fn (Project $record) => $record->getMedia('project_documents')->count() > 3) // Collapse if more than 3 docs
                     ->visible(fn (Project $record) => $record->hasMedia('project_documents'))
                     ->schema([
-                        View::make('components.project-document-preview')
+                        \Filament\Infolists\Components\View::make('components.project-documents-preview')
                             ->hiddenLabel()
                             ->viewData([
                                 'project' => $record,
                             ]),
-                    ])
-                    ->headerActions([
-                        \Filament\Infolists\Components\Actions\Action::make('downloadAll')
-                            ->label('Download All')
-                            ->icon('heroicon-o-arrow-down-tray')
-                            ->color('gray')
-                            ->action(function (Project $record) {
-                                if ($record->getMedia('project_documents')->count() === 0) {
-                                    Notification::make()
-                                        ->title('No documents available')
-                                        ->danger()
-                                        ->send();
-                                    return;
-                                }
-
-                                $zipPath = storage_path('app/public/temp/project_' . $record->id . '_documents.zip');
-
-                                // Ensure directory exists
-                                if (!file_exists(dirname($zipPath))) {
-                                    mkdir(dirname($zipPath), 0755, true);
-                                }
-
-                                $zip = new \ZipArchive();
-                                if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
-                                    foreach ($record->getMedia('project_documents') as $document) {
-                                        $zip->addFile($document->getPath(), $document->file_name);
-                                    }
-                                    $zip->close();
-                                }
-
-                                return response()->download($zipPath)
-                                    ->deleteFileAfterSend(true);
-                            })
-                            ->hidden(fn (Project $record) => $record->getMedia('project_documents')->count() === 0),
-                    ])
+                    ]),
             ]);
     }
 
