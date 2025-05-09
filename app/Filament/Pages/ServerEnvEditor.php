@@ -22,15 +22,6 @@ class ServerEnvEditor extends Page implements Forms\Contracts\HasForms
     public string $GEOIP_IPGEOLOCATION_KEY;
     public string $GEOIP_SERVICE;
 
-    public string $JT_EXPRESS_BASE_URL;
-    public string $JT_EXPRESS_API_ACCOUNT;
-    public string $JT_EXPRESS_PRIVATE_KEY;
-    public string $JT_EXPRESS_CUSTOMER_CODE;
-    public string $JT_EXPRESS_PASSWORD;
-
-    public string $ANALYTICS_PROPERTY_ID;
-    public string $ANALYTICS_SERVICE_ACCOUNT_JSON;
-
     public string $MAIL_MAILER;
     public string $MAIL_HOST;
     public string $MAIL_PORT;
@@ -106,40 +97,6 @@ class ServerEnvEditor extends Page implements Forms\Contracts\HasForms
                     Forms\Components\TextInput::make('GEOIP_SERVICE')
                         ->label(__('env.GEOIP_SERVICE.label'))
                         ->helperText(__('env.GEOIP_SERVICE.helper')),
-                ]),
-
-            Forms\Components\Section::make(__('env.jt_express'))
-                ->schema([
-                    Forms\Components\TextInput::make('JT_EXPRESS_BASE_URL')
-                        ->label(__('env.JT_EXPRESS_BASE_URL.label'))
-                        ->helperText(__('env.JT_EXPRESS_BASE_URL.helper')),
-
-                    Forms\Components\TextInput::make('JT_EXPRESS_API_ACCOUNT')
-                        ->label(__('env.JT_EXPRESS_API_ACCOUNT.label'))
-                        ->helperText(__('env.JT_EXPRESS_API_ACCOUNT.helper')),
-
-                    Forms\Components\TextInput::make('JT_EXPRESS_PRIVATE_KEY')
-                        ->label(__('env.JT_EXPRESS_PRIVATE_KEY.label'))
-                        ->helperText(__('env.JT_EXPRESS_PRIVATE_KEY.helper')),
-
-                    Forms\Components\TextInput::make('JT_EXPRESS_CUSTOMER_CODE')
-                        ->label(__('env.JT_EXPRESS_CUSTOMER_CODE.label'))
-                        ->helperText(__('env.JT_EXPRESS_CUSTOMER_CODE.helper')),
-
-                    Forms\Components\TextInput::make('JT_EXPRESS_PASSWORD')
-                        ->label(__('env.JT_EXPRESS_PASSWORD.label'))
-                        ->helperText(__('env.JT_EXPRESS_PASSWORD.helper')),
-                ]),
-
-            Forms\Components\Section::make(__('env.analytics'))
-                ->schema([
-                    Forms\Components\TextInput::make('ANALYTICS_PROPERTY_ID')
-                        ->label(__('env.ANALYTICS_PROPERTY_ID.label'))
-                        ->helperText(__('env.ANALYTICS_PROPERTY_ID.helper')),
-
-                    Forms\Components\TextInput::make('ANALYTICS_SERVICE_ACCOUNT_JSON')
-                        ->label(__('env.ANALYTICS_SERVICE_ACCOUNT_JSON.label'))
-                        ->helperText(__('env.ANALYTICS_SERVICE_ACCOUNT_JSON.helper')),
                 ]),
 
             Forms\Components\Section::make(__('env.mail'))
@@ -221,10 +178,6 @@ class ServerEnvEditor extends Page implements Forms\Contracts\HasForms
         return [
             'APP_NAME', 'APP_LOCALE',
             'GEOIP_IPGEOLOCATION_KEY', 'GEOIP_SERVICE',
-            'JT_EXPRESS_BASE_URL', 'JT_EXPRESS_API_ACCOUNT',
-            'JT_EXPRESS_PRIVATE_KEY', 'JT_EXPRESS_CUSTOMER_CODE',
-            'JT_EXPRESS_PASSWORD',
-            'ANALYTICS_PROPERTY_ID', 'ANALYTICS_SERVICE_ACCOUNT_JSON',
             'MAIL_MAILER', 'MAIL_HOST', 'MAIL_PORT', 'MAIL_USERNAME',
             'MAIL_PASSWORD', 'MAIL_ENCRYPTION', 'MAIL_FROM_ADDRESS', 'MAIL_FROM_NAME',
         ];
