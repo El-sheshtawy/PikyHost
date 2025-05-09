@@ -4,21 +4,61 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Project;
-use App\Models\Task;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class ProjectTaskSeeder extends Seeder
 {
     public function run()
     {
+        // Create users with different roles
+        $users = [
+            [
+                'name' => 'Alex Johnson',
+                'email' => 'alex.johnson@example.com',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ],
+            [
+                'name' => 'Maria Garcia',
+                'email' => 'maria.garcia@example.com',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ],
+            [
+                'name' => 'James Wilson',
+                'email' => 'james.wilson@example.com',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ],
+            [
+                'name' => 'Sarah Chen',
+                'email' => 'sarah.chen@example.com',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ],
+            [
+                'name' => 'David Kim',
+                'email' => 'david.kim@example.com',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ],
+        ];
+
+        $createdUsers = [];
+        foreach ($users as $user) {
+            $createdUsers[] = User::create($user);
+        }
+
         // Project 1: Website Redesign
         $websiteRedesign = Project::create([
-            'owner_id' => 1,
+            'owner_id' => $createdUsers[0]->id, // Alex owns this project
             'uuid' => \Illuminate\Support\Str::uuid(),
             'name' => 'Corporate Website Redesign',
             'slug' => 'corporate-website-redesign',
             'summary' => 'Complete overhaul of the company website with modern design and improved UX',
-            'description' => 'This project involves redesigning our corporate website to improve user experience, modernize the look and feel, and implement better content organization. The new design should be mobile-first and align with our updated brand guidelines.',
+            'description' => 'This project involves redesigning our corporate website to improve user experience, modernize the look and feel, and implement better content organization.',
             'status' => 'active',
             'is_featured' => true,
             'starts_at' => Carbon::now()->subDays(15),
@@ -29,7 +69,7 @@ class ProjectTaskSeeder extends Seeder
             'settings' => ['color' => '#3b82f6', 'notifications' => true]
         ]);
 
-        // Tasks for Website Redesign
+        // Tasks for Website Redesign with assignments
         $websiteTasks = [
             [
                 'title' => 'Conduct user research',
@@ -40,7 +80,11 @@ class ProjectTaskSeeder extends Seeder
                 'starts_at' => Carbon::now()->subDays(14),
                 'due_at' => Carbon::now()->subDays(7),
                 'completed_at' => Carbon::now()->subDays(5),
-                'order_column' => 1
+                'order_column' => 1,
+                'assignments' => [
+                    ['user_id' => $createdUsers[1]->id, 'role' => 'researcher'], // Maria
+                    ['user_id' => $createdUsers[3]->id, 'role' => 'assistant']    // Sarah
+                ]
             ],
             [
                 'title' => 'Create wireframes',
@@ -51,7 +95,10 @@ class ProjectTaskSeeder extends Seeder
                 'starts_at' => Carbon::now()->subDays(10),
                 'due_at' => Carbon::now()->subDays(3),
                 'completed_at' => Carbon::now()->subDays(2),
-                'order_column' => 2
+                'order_column' => 2,
+                'assignments' => [
+                    ['user_id' => $createdUsers[2]->id, 'role' => 'designer'],   // James
+                ]
             ],
             [
                 'title' => 'Design homepage mockup',
@@ -61,7 +108,11 @@ class ProjectTaskSeeder extends Seeder
                 'progress' => 80,
                 'starts_at' => Carbon::now()->subDays(5),
                 'due_at' => Carbon::now()->addDays(2),
-                'order_column' => 3
+                'order_column' => 3,
+                'assignments' => [
+                    ['user_id' => $createdUsers[2]->id, 'role' => 'lead designer'],  // James
+                    ['user_id' => $createdUsers[4]->id, 'role' => 'reviewer']        // David
+                ]
             ],
             [
                 'title' => 'Develop responsive navigation',
@@ -71,32 +122,30 @@ class ProjectTaskSeeder extends Seeder
                 'progress' => 0,
                 'starts_at' => Carbon::now()->addDays(3),
                 'due_at' => Carbon::now()->addDays(10),
-                'order_column' => 4
+                'order_column' => 4,
+                'assignments' => [
+                    ['user_id' => $createdUsers[3]->id, 'role' => 'developer'],   // Sarah
+                ]
             ],
-            [
-                'title' => 'Content migration plan',
-                'description' => 'Create strategy for migrating existing content to new structure',
-                'status' => 'pending',
-                'priority' => 'medium',
-                'progress' => 0,
-                'starts_at' => Carbon::now()->addDays(5),
-                'due_at' => Carbon::now()->addDays(12),
-                'order_column' => 5
-            ]
         ];
 
-        foreach ($websiteTasks as $task) {
-            $websiteRedesign->tasks()->create($task);
+        foreach ($websiteTasks as $taskData) {
+            $task = $websiteRedesign->tasks()->create(collect($taskData)->except('assignments')->toArray());
+
+            // Assign users to the task
+            foreach ($taskData['assignments'] as $assignment) {
+                $task->users()->attach($assignment['user_id'], ['role' => $assignment['role']]);
+            }
         }
 
         // Project 2: Mobile App Development
         $mobileApp = Project::create([
-            'owner_id' => 1,
+            'owner_id' => $createdUsers[1]->id, // Maria owns this project
             'uuid' => \Illuminate\Support\Str::uuid(),
             'name' => 'Customer Mobile App',
             'slug' => 'customer-mobile-app',
             'summary' => 'Development of iOS and Android app for our customers',
-            'description' => 'This project will deliver a cross-platform mobile application that allows customers to access their accounts, make purchases, and receive personalized recommendations. The app should be developed using React Native for code sharing between platforms.',
+            'description' => 'This project will deliver a cross-platform mobile application that allows customers to access their accounts, make purchases, and receive personalized recommendations.',
             'status' => 'active',
             'is_featured' => false,
             'starts_at' => Carbon::now()->subDays(30),
@@ -107,7 +156,7 @@ class ProjectTaskSeeder extends Seeder
             'settings' => ['color' => '#10b981', 'notifications' => true]
         ]);
 
-        // Tasks for Mobile App
+        // Tasks for Mobile App with assignments
         $mobileTasks = [
             [
                 'title' => 'Set up development environment',
@@ -118,18 +167,11 @@ class ProjectTaskSeeder extends Seeder
                 'starts_at' => Carbon::now()->subDays(28),
                 'due_at' => Carbon::now()->subDays(20),
                 'completed_at' => Carbon::now()->subDays(18),
-                'order_column' => 1
-            ],
-            [
-                'title' => 'Design app architecture',
-                'description' => 'Create technical architecture diagram and component structure',
-                'status' => 'completed',
-                'priority' => 'high',
-                'progress' => 100,
-                'starts_at' => Carbon::now()->subDays(25),
-                'due_at' => Carbon::now()->subDays(15),
-                'completed_at' => Carbon::now()->subDays(14),
-                'order_column' => 2
+                'order_column' => 1,
+                'assignments' => [
+                    ['user_id' => $createdUsers[3]->id, 'role' => 'devops'],    // Sarah
+                    ['user_id' => $createdUsers[4]->id, 'role' => 'developer']   // David
+                ]
             ],
             [
                 'title' => 'Implement authentication flow',
@@ -139,17 +181,11 @@ class ProjectTaskSeeder extends Seeder
                 'progress' => 60,
                 'starts_at' => Carbon::now()->subDays(10),
                 'due_at' => Carbon::now()->addDays(5),
-                'order_column' => 3
-            ],
-            [
-                'title' => 'API integration planning',
-                'description' => 'Coordinate with backend team on API specifications',
-                'status' => 'pending',
-                'priority' => 'medium',
-                'progress' => 0,
-                'starts_at' => Carbon::now()->addDays(2),
-                'due_at' => Carbon::now()->addDays(10),
-                'order_column' => 4
+                'order_column' => 2,
+                'assignments' => [
+                    ['user_id' => $createdUsers[0]->id, 'role' => 'frontend'],   // Alex
+                    ['user_id' => $createdUsers[4]->id, 'role' => 'backend']    // David
+                ]
             ],
             [
                 'title' => 'Design product catalog screen',
@@ -159,32 +195,29 @@ class ProjectTaskSeeder extends Seeder
                 'progress' => 0,
                 'starts_at' => Carbon::now()->addDays(7),
                 'due_at' => Carbon::now()->addDays(14),
-                'order_column' => 5
+                'order_column' => 3,
+                'assignments' => [
+                    ['user_id' => $createdUsers[2]->id, 'role' => 'designer'], // James
+                ]
             ],
-            [
-                'title' => 'Set up analytics',
-                'description' => 'Integrate Firebase Analytics and configure events',
-                'status' => 'pending',
-                'priority' => 'low',
-                'progress' => 0,
-                'starts_at' => Carbon::now()->addDays(20),
-                'due_at' => Carbon::now()->addDays(25),
-                'order_column' => 6
-            ]
         ];
 
-        foreach ($mobileTasks as $task) {
-            $mobileApp->tasks()->create($task);
+        foreach ($mobileTasks as $taskData) {
+            $task = $mobileApp->tasks()->create(collect($taskData)->except('assignments')->toArray());
+
+            foreach ($taskData['assignments'] as $assignment) {
+                $task->users()->attach($assignment['user_id'], ['role' => $assignment['role']]);
+            }
         }
 
         // Project 3: Office Relocation
         $officeMove = Project::create([
-            'owner_id' => 1,
+            'owner_id' => $createdUsers[4]->id, // David owns this project
             'uuid' => \Illuminate\Support\Str::uuid(),
             'name' => 'New Office Setup',
             'slug' => 'new-office-setup',
             'summary' => 'Relocate company headquarters to new downtown location',
-            'description' => 'This project involves planning and executing the move of our company headquarters from the current location to the new downtown office space. Includes physical move, IT setup, and employee orientation.',
+            'description' => 'This project involves planning and executing the move of our company headquarters from the current location to the new downtown office space.',
             'status' => 'planned',
             'is_featured' => false,
             'starts_at' => Carbon::now()->addDays(30),
@@ -195,7 +228,7 @@ class ProjectTaskSeeder extends Seeder
             'settings' => ['color' => '#f59e0b', 'notifications' => false]
         ]);
 
-        // Tasks for Office Relocation
+        // Tasks for Office Relocation with assignments
         $officeTasks = [
             [
                 'title' => 'Finalize lease agreement',
@@ -205,17 +238,11 @@ class ProjectTaskSeeder extends Seeder
                 'progress' => 90,
                 'starts_at' => Carbon::now()->subDays(10),
                 'due_at' => Carbon::now()->addDays(5),
-                'order_column' => 1
-            ],
-            [
-                'title' => 'Hire moving company',
-                'description' => 'Get quotes from 3 vendors and select best option',
-                'status' => 'pending',
-                'priority' => 'high',
-                'progress' => 0,
-                'starts_at' => Carbon::now()->addDays(10),
-                'due_at' => Carbon::now()->addDays(20),
-                'order_column' => 2
+                'order_column' => 1,
+                'assignments' => [
+                    ['user_id' => $createdUsers[4]->id, 'role' => 'manager'],   // David
+                    ['user_id' => $createdUsers[0]->id, 'role' => 'legal']      // Alex
+                ]
             ],
             [
                 'title' => 'Plan office layout',
@@ -225,42 +252,19 @@ class ProjectTaskSeeder extends Seeder
                 'progress' => 0,
                 'starts_at' => Carbon::now()->addDays(15),
                 'due_at' => Carbon::now()->addDays(25),
-                'order_column' => 3
+                'order_column' => 2,
+                'assignments' => [
+                    ['user_id' => $createdUsers[1]->id, 'role' => 'planner'],   // Maria
+                ]
             ],
-            [
-                'title' => 'Coordinate IT infrastructure',
-                'description' => 'Plan network setup, servers, and workstations',
-                'status' => 'pending',
-                'priority' => 'high',
-                'progress' => 0,
-                'starts_at' => Carbon::now()->addDays(20),
-                'due_at' => Carbon::now()->addDays(35),
-                'order_column' => 4
-            ],
-            [
-                'title' => 'Employee orientation sessions',
-                'description' => 'Schedule tours and info sessions for all staff',
-                'status' => 'pending',
-                'priority' => 'medium',
-                'progress' => 0,
-                'starts_at' => Carbon::now()->addDays(50),
-                'due_at' => Carbon::now()->addDays(60),
-                'order_column' => 5
-            ],
-            [
-                'title' => 'Office warming party',
-                'description' => 'Plan celebration event for employees and clients',
-                'status' => 'pending',
-                'priority' => 'low',
-                'progress' => 0,
-                'starts_at' => Carbon::now()->addDays(80),
-                'due_at' => Carbon::now()->addDays(85),
-                'order_column' => 6
-            ]
         ];
 
-        foreach ($officeTasks as $task) {
-            $officeMove->tasks()->create($task);
+        foreach ($officeTasks as $taskData) {
+            $task = $officeMove->tasks()->create(collect($taskData)->except('assignments')->toArray());
+
+            foreach ($taskData['assignments'] as $assignment) {
+                $task->users()->attach($assignment['user_id'], ['role' => $assignment['role']]);
+            }
         }
     }
 }
