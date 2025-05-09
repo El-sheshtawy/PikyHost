@@ -134,4 +134,23 @@ class Project extends Model implements HasMedia
     {
         return $this->status->label(app()->getLocale());
     }
+
+    public function getFileTypeName($mimeType)
+    {
+        $types = [
+            'application/pdf' => 'PDF Document',
+            'image/jpeg' => 'JPEG Image',
+            'image/png' => 'PNG Image',
+            'image/gif' => 'GIF Image',
+            'image/webp' => 'WebP Image',
+            'application/vnd.ms-excel' => 'Excel Spreadsheet',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'Excel Spreadsheet',
+            'application/msword' => 'Word Document',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'Word Document',
+            'text/plain' => 'Text File',
+            'text/csv' => 'CSV File',
+        ];
+
+        return $types[$mimeType] ?? 'File';
+    }
 }

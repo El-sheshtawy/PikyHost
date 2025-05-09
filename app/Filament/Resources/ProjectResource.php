@@ -248,7 +248,7 @@ class ProjectResource extends Resource
                                 Group::make([
                                     TextEntry::make('budget')
                                         ->label('Budget')
-                                        ->money('USD'),
+                                        ->money(),
                                     TextEntry::make('is_featured')
                                         ->label('Featured')
                                         ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No'),
@@ -283,7 +283,7 @@ class ProjectResource extends Resource
                         RepeatableEntry::make('tasks')
                             ->schema([
                                 TextEntry::make('title')
-                                    ->label('Task Title'),
+                                    ->label('Title'),
                                 TextEntry::make('status')
                                     ->label('Status')
                                     ->badge(),
@@ -301,16 +301,50 @@ class ProjectResource extends Resource
                     ]),
 
                 Section::make('Documents')
+                    ->collapsible()
+                    ->collapsed(fn (Project $record) => $record->getMedia('project_documents')->count() > 3) // Collapse if more than 3 docs
+                    ->visible(fn (Project $record) => $record->hasMedia('project_documents'))
                     ->schema([
-                        RepeatableEntry::make('project_documents')
-                            ->label('')
-                            ->schema([
-                                TextEntry::make('file_name')
-                                    ->label('Document')
-                                    ->getStateUsing(fn ($state) => basename($state)),
-                            ])
-                            ->getStateUsing(fn (Project $record) => $record->getProjectDocumentsUrls()),
-                    ]),
+                        View::make('components.project-document-preview')
+                            ->hiddenLabel()
+                            ->viewData([
+                                'project' => $record,
+                            ]),
+                    ])
+                    ->headerActions([
+                        \Filament\Infolists\Components\Actions\Action::make('downloadAll')
+                            ->label('Download All')
+                            ->icon('heroicon-o-arrow-down-tray')
+                            ->color('gray')
+                            ->action(function (Project $record) {
+                                if ($record->getMedia('project_documents')->count() === 0) {
+                                    Notification::make()
+                                        ->title('No documents available')
+                                        ->danger()
+                                        ->send();
+                                    return;
+                                }
+
+                                $zipPath = storage_path('app/public/temp/project_' . $record->id . '_documents.zip');
+
+                                // Ensure directory exists
+                                if (!file_exists(dirname($zipPath))) {
+                                    mkdir(dirname($zipPath), 0755, true);
+                                }
+
+                                $zip = new \ZipArchive();
+                                if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+                                    foreach ($record->getMedia('project_documents') as $document) {
+                                        $zip->addFile($document->getPath(), $document->file_name);
+                                    }
+                                    $zip->close();
+                                }
+
+                                return response()->download($zipPath)
+                                    ->deleteFileAfterSend(true);
+                            })
+                            ->hidden(fn (Project $record) => $record->getMedia('project_documents')->count() === 0),
+                    ])
             ]);
     }
 
