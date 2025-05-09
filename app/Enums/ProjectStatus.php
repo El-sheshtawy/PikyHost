@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum ProjectStatus: string
+use Filament\Support\Contracts\HasColor;
+
+enum ProjectStatus: string implements HasColor
 {
     case DRAFT = 'draft';
     case PLANNED = 'planned';
@@ -10,6 +12,18 @@ enum ProjectStatus: string
     case ON_HOLD = 'on_hold';
     case COMPLETED = 'completed';
     case CANCELLED = 'cancelled';
+
+    public function getColor(): string | array | null
+    {
+        return match ($this) {
+            self::DRAFT   => 'gray',
+            self::PLANNED => 'gray',
+            self::ACTIVE  => 'info',
+            self::COMPLETED   => 'success',
+            self::CANCELLED  => 'danger',
+            self::ON_HOLD   => 'warning',
+        };
+    }
 
     public function label(string $locale = 'en'): string
     {

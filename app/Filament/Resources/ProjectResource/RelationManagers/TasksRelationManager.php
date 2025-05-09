@@ -52,12 +52,6 @@ class TasksRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('priority')
                     ->badge()
                     ->formatStateUsing(fn (TaskPriority $state): string => $state->label())
-                    ->color(fn (TaskPriority $state): string => match ($state) {
-                        TaskPriority::LOW => 'gray',
-                        TaskPriority::MEDIUM => 'blue',
-                        TaskPriority::HIGH => 'orange',
-                        TaskPriority::CRITICAL => 'red',
-                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('progress')
                     ->numeric()

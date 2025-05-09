@@ -52,9 +52,7 @@ class TasksBoardBoardPage extends KanbanBoardPage
                 'due_at' => 'heroicon-o-calendar',
                 'description' => 'heroicon-o-document-text',
                 'assignees' => 'heroicon-o-users',
-            ])
-            ->initialCardsCount(15)
-            ->cardsIncrement(10);
+            ]);
     }
 
     public function getSubject(): Builder

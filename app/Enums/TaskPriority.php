@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum TaskPriority: string
+use Filament\Support\Contracts\HasColor;
+
+enum TaskPriority: string implements HasColor
 {
     case LOW = 'low';
     case MEDIUM = 'medium';
@@ -18,6 +20,17 @@ enum TaskPriority: string
             self::CRITICAL => $locale === 'ar' ? 'حرج' : 'Critical',
         };
     }
+
+    public function getColor(): string | array | null
+    {
+        return match ($this) {
+            self::LOW   => 'gray',
+            self::HIGH => 'warning',
+            self::MEDIUM  => 'info',
+            self::CRITICAL   => 'danger',
+        };
+    }
+
 
     public static function options(string $locale = 'en'): array
     {
