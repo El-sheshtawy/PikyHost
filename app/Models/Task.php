@@ -13,12 +13,12 @@ use Spatie\Translatable\HasTranslations;
 
 class Task extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory;
 
-    public $translatable = [
-        'title',
-        'description',
-    ];
+//    public $translatable = [
+//        'title',
+//        'description',
+//    ];
 
     protected $fillable = [
         'project_id',

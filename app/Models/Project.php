@@ -12,14 +12,14 @@ use Spatie\Translatable\HasTranslations;
 
 class Project extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory;
 
-    public $translatable = [
-        'name',
-        'slug',
-        'summary',
-        'description',
-    ];
+//    public $translatable = [
+//        'name',
+//        'slug',
+//        'summary',
+//        'description',
+//    ];
 
     protected $fillable = [
         'owner_id',
