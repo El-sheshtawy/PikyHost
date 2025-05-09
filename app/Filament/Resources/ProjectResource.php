@@ -43,6 +43,49 @@ class ProjectResource extends Resource
                             ->maxLength(255),
                     ])->columns(2),
 
+                Forms\Components\Section::make('Media')
+                    ->schema([
+                        Forms\Components\FileUpload::make('feature_project_image')
+                            ->collection('feature_project_image')
+                            ->image()
+                            ->maxSize(2048)
+                            ->label('Main Feature Image')
+                            ->imageEditor(),
+
+                        Forms\Components\FileUpload::make('second_feature_image')
+                            ->collection('feature_project_image') // If you want a second image in same collection
+                            ->image()
+                            ->maxSize(2048)
+                            ->label('Secondary Feature Image')
+                            ->imageEditor(),
+
+                        Forms\Components\FileUpload::make('project_gallery')
+                            ->collection('project_gallery')
+                            ->multiple()
+                            ->directory('projects/gallery')
+                            ->maxFiles(10)
+                            ->maxSize(5120)
+                            ->label('Gallery Images/Videos')
+                            ->image()
+                            ->video()
+                            ->preserveFilenames(),
+
+                        Forms\Components\FileUpload::make('project_documents')
+                            ->collection('project_documents')
+                            ->multiple()
+                            ->directory('projects/documents')
+                            ->maxFiles(20)
+                            ->maxSize(10240)
+                            ->label('Project Documents')
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            ]),
+                    ])->columns(2),
+
                 Forms\Components\Section::make('Details')
                     ->schema([
                         Forms\Components\Textarea::make('summary')

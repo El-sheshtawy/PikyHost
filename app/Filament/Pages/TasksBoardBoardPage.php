@@ -73,7 +73,7 @@ class TasksBoardBoardPage extends KanbanBoardPage
             ->iconButton()
             ->icon('heroicon-o-plus')
             ->modalHeading('Create New Task')
-            ->modalWidth('md')
+            ->modalWidth('xl')
             ->form([
                 Components\Select::make('users')
                     ->label('Assignees')
@@ -119,7 +119,7 @@ class TasksBoardBoardPage extends KanbanBoardPage
     {
         return $action
             ->modalHeading('Edit Task')
-            ->modalWidth('md')
+            ->modalWidth('xl')
             ->form([
                 Components\Select::make('users')
                     ->label('Assignees')
@@ -154,7 +154,7 @@ class TasksBoardBoardPage extends KanbanBoardPage
     {
         return $action
             ->modalHeading('Task Details')
-            ->modalWidth('md')
+            ->modalWidth('xl')
             ->modalContent(view('filament.pages.task-view', [
                 'record' => $action->getRecord(),
             ]));

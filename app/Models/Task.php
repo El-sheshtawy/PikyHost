@@ -9,11 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
 
-class Task extends Model
+class Task extends Model implements HasMedia
 {
-    use HasFactory;
+    use InteractsWithMedia;
 
 //    public $translatable = [
 //        'title',
@@ -56,6 +58,53 @@ class Task extends Model
         static::creating(function ($model) {
             $model->uuid = (string) Str::uuid();
         });
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('task_attachments')
+            ->acceptsMimeTypes([
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'text/plain',
+                'video/mp4'
+            ]);
+
+        $this->addMediaCollection('task_screenshots')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+
+        $this->addMediaCollection('task_reference_files')
+            ->singleFile()
+            ->acceptsMimeTypes([
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ]);
+    }
+
+    public function getTaskAttachmentsUrls(): array
+    {
+        return $this->getMedia('task_attachments')
+            ->map(fn($media) => $media->getUrl())
+            ->toArray();
+    }
+
+    public function getTaskScreenshotsUrls(string $conversion = null): array
+    {
+        return $this->getMedia('task_screenshots')
+            ->map(fn($media) => $conversion && $media->hasGeneratedConversion($conversion)
+                ? $media->getUrl($conversion)
+                : $media->getUrl())
+            ->toArray();
+    }
+
+    public function getTaskReferenceFileUrl(): ?string
+    {
+        return $this->getFirstMediaUrl('task_reference_files') ?: null;
     }
 
     public function project(): BelongsTo
