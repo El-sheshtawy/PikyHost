@@ -86,9 +86,8 @@ class TasksBoardBoardPage extends KanbanBoardPage
                     ->required()
                     ->maxLength(255)
                     ->translateLabel(),
-                Components\Textarea::make('description')
-                    ->columnSpanFull()
-                    ->translateLabel(),
+                Components\MarkdownEditor::make('description')
+                    ->columnSpanFull(),
                 Components\Select::make('priority')
                     ->options(TaskPriority::options())
                     ->required()
@@ -127,9 +126,8 @@ class TasksBoardBoardPage extends KanbanBoardPage
                     ->required()
                     ->maxLength(255)
                     ->translateLabel(),
-                Components\Textarea::make('description')
-                    ->columnSpanFull()
-                    ->translateLabel(),
+                Components\MarkdownEditor::make('description')
+                    ->columnSpanFull(),
                 Components\Select::make('priority')
                     ->options(TaskPriority::options())
                     ->required()
