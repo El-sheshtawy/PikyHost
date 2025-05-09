@@ -9,10 +9,16 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class TasksRelationManager extends RelationManager
 {
     protected static string $relationship = 'tasks';
+
+   public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+   {
+       return false;
+   }
 
     public function form(Form $form): Form
     {
