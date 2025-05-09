@@ -76,6 +76,7 @@ class ProjectResource extends Resource
                 Forms\Components\Section::make('Progress')
                     ->schema([
                         Forms\Components\TextInput::make('budget')
+                            ->maxLength(null)
                             ->numeric(),
 
                         Forms\Components\TextInput::make('progress')
@@ -149,13 +150,10 @@ class ProjectResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->recordUrl(function () {
-               return Tables\Actions\Action::make('view_tasks_board')
-                    ->label('Tasks Board')
-                    ->icon('heroicon-o-view-columns')
-                    ->url(fn (Project $record): string => route('filament.admin.pages.tasks-board-board-page', [
-                        'project_id' => $record->id
-                    ]));
+            ->recordUrl(function ($record) {
+               return route('filament.admin.pages.tasks-board-board-page', [
+                   'project_id' => $record->id
+               ]);
             })
             ->defaultSort('created_at', 'desc');
     }
