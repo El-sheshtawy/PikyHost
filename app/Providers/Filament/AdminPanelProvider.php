@@ -33,6 +33,12 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->spa()
+            ->spaUrlExceptions([
+                '*/admin/blog-categories/create',
+                '*/admin/blog-categories/*/edit',
+                '*/admin/blogs',
+                '*/admin/blogs/*',
+            ])
             ->login()
             ->colors([
                 'primary' => Color::Indigo,
