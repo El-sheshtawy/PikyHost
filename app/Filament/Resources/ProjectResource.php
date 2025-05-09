@@ -45,21 +45,21 @@ class ProjectResource extends Resource
 
                 Forms\Components\Section::make('Media')
                     ->schema([
-                        Forms\Components\FileUpload::make('feature_project_image')
+                        Forms\Components\SpatieMediaLibraryFileUpload::make('feature_project_image')
                             ->collection('feature_project_image')
                             ->image()
                             ->maxSize(2048)
                             ->label('Main Feature Image')
                             ->imageEditor(),
 
-                        Forms\Components\FileUpload::make('second_feature_image')
+                        Forms\Components\SpatieMediaLibraryFileUpload::make('second_feature_image')
                             ->collection('feature_project_image') // If you want a second image in same collection
                             ->image()
                             ->maxSize(2048)
                             ->label('Secondary Feature Image')
                             ->imageEditor(),
 
-                        Forms\Components\FileUpload::make('project_gallery')
+                        Forms\Components\SpatieMediaLibraryFileUpload::make('project_gallery')
                             ->collection('project_gallery')
                             ->multiple()
                             ->directory('projects/gallery')
@@ -70,7 +70,7 @@ class ProjectResource extends Resource
                             ->video()
                             ->preserveFilenames(),
 
-                        Forms\Components\FileUpload::make('project_documents')
+                        Forms\Components\SpatieMediaLibraryFileUpload::make('project_documents')
                             ->collection('project_documents')
                             ->multiple()
                             ->directory('projects/documents')
