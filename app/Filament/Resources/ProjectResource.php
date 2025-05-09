@@ -227,8 +227,7 @@ class ProjectResource extends Resource
                             ->schema([
                                 Group::make([
                                     TextEntry::make('name')
-                                        ->label('Project Name')
-                                        ->formatStateUsing(fn (Project $record) => $record->getTranslation('name', app()->getLocale())),
+                                        ->label('Project Name'),
                                     TextEntry::make('status')
                                         ->label('Status')
                                         ->badge(),
@@ -264,7 +263,6 @@ class ProjectResource extends Resource
                     ->schema([
                         TextEntry::make('description')
                             ->label('')
-                            ->formatStateUsing(fn (Project $record) => $record->getTranslation('description', app()->getLocale()))
                             ->html()
                             ->columnSpanFull(),
                     ]),
