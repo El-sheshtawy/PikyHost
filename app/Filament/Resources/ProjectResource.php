@@ -6,12 +6,21 @@ use App\Enums\ProjectStatus;
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Filament\Resources\ProjectResource\RelationManagers\TasksRelationManager;
 use App\Models\Project;
+use App\Models\Task;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Group;
 
 class ProjectResource extends Resource
 {
@@ -133,78 +142,181 @@ class ProjectResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(fn($record) => route('filament.admin.pages.tasks-board-board-page', ['project_id' => $record->id]), true)
             ->columns([
-                Tables\Columns\SpatieMediaLibraryImageColumn::make('feature_project_image')
-                    ->circular()
-                    ->simpleLightbox()
-                    ->placeholder('-')
-                    ->collection('feature_project_image')
-                    ->label(__('Image')),
+                Tables\Columns\Layout\Stack::make([
+                    Tables\Columns\SpatieMediaLibraryImageColumn::make('feature_project_image')
+                        ->circular()
+                        ->placeholder('-')
+                        ->collection('feature_project_image')
+                        ->height('100%')
+                        ->width('100%'),
+                    Tables\Columns\Layout\Stack::make([
+                        Tables\Columns\TextColumn::make('name')
+                            ->weight(FontWeight::Bold)
+                            ->searchable()
+                            ->sortable(),
 
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('owner.name')
-                    ->label('Owner')
-                    ->numeric()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->formatStateUsing(fn (ProjectStatus $state): string => $state->label())
-                    ->sortable(),
-
-                Tables\Columns\IconColumn::make('is_featured')
-                    ->boolean()
-                    ->label('Featured'),
-
-                Tables\Columns\TextColumn::make('progress')
-                    ->numeric()
-                    ->suffix('%')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('starts_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('ends_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('completed_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                        Tables\Columns\TextColumn::make('owner.name')
+                            ->label(__('Owner'))
+                            ->color('gray')
+                            ->limit(30)
+                            ->sortable(),
+                    ]),
+                ])->space(3),
+                Tables\Columns\Layout\Panel::make([
+                    Tables\Columns\TextColumn::make('status')
+                        ->badge()
+                        ->formatStateUsing(fn (ProjectStatus $state): string => $state->label())
+                        ->sortable(),
+                    Tables\Columns\Layout\Stack::make([
+                        Tables\Columns\TextColumn::make('description')
+                            ->color('gray')
+                            ->limit(100)
+                            ->wrap(),
+                    ])->space(4),
+                    Tables\Columns\TextColumn::make('progress')
+                        ->numeric()
+                        ->suffix('%')
+                        ->sortable()
+                        ->formatStateUsing(fn ($state): string => 'Progress: '.number_format($state, 1)),
+                ])->collapsible(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options(ProjectStatus::options()),
-
+                    ->options(ProjectStatus::options())
+                    ->label(__('Status'))
+                    ->multiple(),
                 Tables\Filters\Filter::make('is_featured')
                     ->query(fn (Builder $query): Builder => $query->where('is_featured', true))
-                    ->label('Featured Only'),
-
+                    ->label(__('Featured Only')),
                 Tables\Filters\Filter::make('active_projects')
                     ->query(fn (Builder $query): Builder => $query->where('status', ProjectStatus::ACTIVE))
-                    ->label('Active Projects Only'),
-            ],Tables\Enums\FiltersLayout::Modal)
+                    ->label(__('Active Projects Only')),
+            ], Tables\Enums\FiltersLayout::Modal)
+            ->contentGrid([
+                'sm' => 1,
+                'md' => 2,
+                'xl' => 3,
+            ])
+            ->paginated([
+                12,
+                24,
+                48,
+                'all',
+            ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('visit')
+                    ->label(__('Visit Project Tasks'))
+                    ->icon('heroicon-m-arrow-top-right-on-square')
+                    ->color('gray')
+                    ->url(fn ($record): string => route('filament.admin.pages.tasks-board-board-page', ['project_id' => $record->id]))
+                    ->openUrlInNewTab(),
+                Tables\Actions\EditAction::make()
+                    ->label(__('Edit'))
+                    ->icon('heroicon-m-pencil-square'),
+                Tables\Actions\DeleteAction::make()
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
-            ->recordUrl(function ($record) {
-               return route('filament.admin.pages.tasks-board-board-page', [
-                   'project_id' => $record->id
-               ]);
-            })
             ->defaultSort('created_at', 'desc');
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Project Overview')
+                    ->schema([
+                        Grid::make(3)
+                            ->schema([
+                                Group::make([
+                                    TextEntry::make('name')
+                                        ->label('Project Name')
+                                        ->formatStateUsing(fn (Project $record) => $record->getTranslation('name', app()->getLocale())),
+                                    TextEntry::make('status')
+                                        ->label('Status')
+                                        ->badge(),
+                                    TextEntry::make('owner.name')
+                                        ->label('Project Owner'),
+                                ]),
+                                Group::make([
+                                    TextEntry::make('starts_at')
+                                        ->label('Start Date')
+                                        ->date(),
+                                    TextEntry::make('ends_at')
+                                        ->label('End Date')
+                                        ->date(),
+                                    TextEntry::make('progress')
+                                        ->label('Progress')
+                                        ->suffix('%'),
+                                ]),
+                                Group::make([
+                                    TextEntry::make('budget')
+                                        ->label('Budget')
+                                        ->money('USD'),
+                                    TextEntry::make('is_featured')
+                                        ->label('Featured')
+                                        ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No'),
+                                    TextEntry::make('completed_at')
+                                        ->label('Completed At')
+                                        ->date(),
+                                ]),
+                            ]),
+                    ]),
+
+                Section::make('Description')
+                    ->schema([
+                        TextEntry::make('description')
+                            ->label('')
+                            ->formatStateUsing(fn (Project $record) => $record->getTranslation('description', app()->getLocale()))
+                            ->html()
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Media')
+                    ->schema([
+                        ImageEntry::make('feature_project_image')
+                            ->label('Featured Image')
+                            ->getStateUsing(fn (Project $record) => $record->getFeatureProjectImageUrl()),
+                        ImageEntry::make('second_feature_image')
+                            ->label('Secondary Image')
+                            ->getStateUsing(fn (Project $record) => $record->getSecondFeatureImageUrl()),
+                    ])
+                    ->columns(2),
+
+                Section::make('Tasks')
+                    ->schema([
+                        RepeatableEntry::make('tasks')
+                            ->schema([
+                                TextEntry::make('title')
+                                    ->label('Task Title'),
+                                TextEntry::make('status')
+                                    ->label('Status')
+                                    ->badge(),
+                                TextEntry::make('priority')
+                                    ->label('Priority')
+                                    ->badge(),
+                                TextEntry::make('progress')
+                                    ->label('Progress')
+                                    ->suffix('%'),
+                                TextEntry::make('due_at')
+                                    ->label('Due Date')
+                                    ->date(),
+                            ])
+                            ->columns(5),
+                    ]),
+
+                Section::make('Documents')
+                    ->schema([
+                        RepeatableEntry::make('project_documents')
+                            ->label('')
+                            ->schema([
+                                TextEntry::make('file_name')
+                                    ->label('Document')
+                                    ->getStateUsing(fn ($state) => basename($state)),
+                            ])
+                            ->getStateUsing(fn (Project $record) => $record->getProjectDocumentsUrls()),
+                    ]),
+            ]);
     }
 
     public static function getRelations(): array
@@ -220,6 +332,7 @@ class ProjectResource extends Resource
             'index' => Pages\ListProjects::route('/'),
             'create' => Pages\CreateProject::route('/create'),
             'edit' => Pages\EditProject::route('/{record}/edit'),
+            'view' => Pages\ViewProject::route('/{record}'),
         ];
     }
 }

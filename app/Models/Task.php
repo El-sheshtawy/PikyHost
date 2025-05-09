@@ -17,11 +17,6 @@ class Task extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
-//    public $translatable = [
-//        'title',
-//        'description',
-//    ];
-
     protected $fillable = [
         'project_id',
         'uuid',
