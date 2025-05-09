@@ -4,14 +4,12 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Project;
-use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
-class ProjectTaskUserSeeder extends Seeder
+class ProjectTaskSeeder extends Seeder
 {
     public function run()
     {
