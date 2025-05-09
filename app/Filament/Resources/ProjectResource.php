@@ -206,12 +206,9 @@ class ProjectResource extends Resource
                 'all',
             ])
             ->actions([
-                Tables\Actions\Action::make('visit')
-                    ->label(__('Visit Project Tasks'))
-                    ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->color('gray')
-                    ->url(fn ($record): string => route('filament.admin.pages.tasks-board-board-page', ['project_id' => $record->id]))
-                    ->openUrlInNewTab(),
+                Tables\Actions\ViewAction::make('visit')
+                    ->label(__('View'))
+                    ->icon('heroicon-m-arrow-top-right-on-square'),
                 Tables\Actions\EditAction::make()
                     ->label(__('Edit'))
                     ->icon('heroicon-m-pencil-square'),
