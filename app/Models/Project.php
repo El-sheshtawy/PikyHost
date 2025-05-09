@@ -71,6 +71,10 @@ class Project extends Model implements HasMedia
             ->singleFile()
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
 
+        $this->addMediaCollection('second_feature_image')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+
         $this->addMediaCollection('project_documents')
             ->acceptsMimeTypes([
                 'application/pdf',
@@ -87,6 +91,10 @@ class Project extends Model implements HasMedia
     public function getFeatureProjectImageUrl(): ?string
     {
         return $this->getFirstMediaUrl('feature_project_image') ?: null;
+    }
+    public function getSecondFeatureImageUrl(): ?string
+    {
+        return $this->getFirstMediaUrl('second_feature_image') ?: null;
     }
 
     public function getProjectDocumentsUrls(): array

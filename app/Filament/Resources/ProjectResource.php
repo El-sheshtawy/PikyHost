@@ -53,7 +53,7 @@ class ProjectResource extends Resource
                             ->imageEditor(),
 
                         Forms\Components\SpatieMediaLibraryFileUpload::make('second_feature_image')
-                            ->collection('feature_project_image') // If you want a second image in same collection
+                            ->collection('second_feature_image') // If you want a second image in same collection
                             ->image()
                             ->maxSize(2048)
                             ->label('Secondary Feature Image')
