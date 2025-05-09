@@ -67,7 +67,6 @@ class ProjectResource extends Resource
                             ->maxSize(5120)
                             ->label('Gallery Images/Videos')
                             ->image()
-                            ->video()
                             ->preserveFilenames(),
 
                         Forms\Components\SpatieMediaLibraryFileUpload::make('project_documents')
